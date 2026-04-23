@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import FireLogo from './FireLogo'; 
+
+// Import âm thanh từ thư mục assets
+import bgmFile from './assets/BGM.mp3';
+import sfxFile from './assets/SFM.mp3';
 
 function App() {
   const [exp, setExp] = useState(() => Number(localStorage.getItem('lastline-exp')) || 0);
@@ -24,9 +28,37 @@ function App() {
 
   const [timeLeft, setTimeLeft] = useState("");
   const maxExp = 1000;
-
   const isTodayCompleted = Object.values(completedTasks).every(task => task === true);
 
+  // --- HỆ THỐNG ÂM THANH ---
+  const bgmRef = useRef(null);
+
+  useEffect(() => {
+    // Khởi tạo nhạc nền
+    bgmRef.current = new Audio(bgmFile);
+    bgmRef.current.loop = true;
+    bgmRef.current.volume = 0.2; // Nhạc nền vừa đủ nghe để không bị chói
+
+    // Trình duyệt chặn autoplay, nên sẽ phát nhạc sau lần tương tác đầu tiên
+    const handleFirstInteraction = () => {
+      bgmRef.current.play().catch(err => console.log("Chờ tương tác..."));
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+
+    window.addEventListener('click', handleFirstInteraction);
+    return () => {
+      if (bgmRef.current) bgmRef.current.pause();
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+  }, []);
+
+  const playSfx = () => {
+    const sfx = new Audio(sfxFile);
+    sfx.volume = 0.5; // SFX to hơn BGM một chút để tạo cảm giác phản hồi tốt
+    sfx.play();
+  };
+
+  // --- LOGIC GAME ---
   useEffect(() => {
     const today = new Date().toDateString();
     localStorage.setItem('lastline-last-reset', today);
@@ -37,9 +69,7 @@ function App() {
       midnight.setHours(24, 0, 0, 0);
       const diff = midnight - now;
       
-      if (diff <= 0) {
-        window.location.reload();
-      }
+      if (diff <= 0) window.location.reload();
 
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / (1000 * 60)) % 60);
@@ -69,6 +99,8 @@ function App() {
 
   const gainExp = (taskKey) => {
     if (completedTasks[taskKey]) return;
+
+    playSfx(); // Phát âm thanh khi nhấn hoàn thành task
 
     let newExp = exp + 20;
     let newLevel = level;
@@ -101,7 +133,7 @@ function App() {
 
       <div className="max-w-5xl mx-auto relative z-10">
         
-        {/* Header Section - ĐÃ FIX CHỮ E BỊ CẮT */}
+        {/* Header Section */}
         <div className="border-b-2 border-slate-800 pb-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic tracking-tighter pr-4">
             THE LAST LINE
