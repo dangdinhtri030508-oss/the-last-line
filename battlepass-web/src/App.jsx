@@ -5,23 +5,37 @@ function App() {
   const [level, setLevel] = useState(() => Number(localStorage.getItem('lastline-level')) || 0);
   const [completedTasks, setCompletedTasks] = useState(() => {
     const saved = localStorage.getItem('lastline-tasks');
+    const lastReset = localStorage.getItem('lastline-last-reset');
+    const today = new Date().toDateString();
+
+    // KIỂM TRA NGAY KHI LOAD TRANG: Nếu ngày lưu khác ngày hiện tại -> Reset task
+    if (lastReset !== today) {
+      return { math: false, physics: false, flute: false, python: false, deadhang: false };
+    }
     return saved ? JSON.parse(saved) : { math: false, physics: false, flute: false, python: false, deadhang: false };
   });
   const [timeLeft, setTimeLeft] = useState("");
 
   const maxExp = 1000;
 
-  // --- COUNTDOWN LOGIC ---
+  // --- LOGIC RESET & COUNTDOWN ---
   useEffect(() => {
+    // 1. Cập nhật ngày reset cuối cùng vào localStorage lần đầu
+    const today = new Date().toDateString();
+    localStorage.setItem('lastline-last-reset', today);
+
+    // 2. Chạy timer mỗi giây
     const timer = setInterval(() => {
       const now = new Date();
       const midnight = new Date();
       midnight.setHours(24, 0, 0, 0);
       const diff = midnight - now;
       
+      // Nếu đúng thời điểm giao thừa
       if (diff <= 0) {
+        const newDay = new Date().toDateString();
         setCompletedTasks({ math: false, physics: false, flute: false, python: false, deadhang: false });
-        localStorage.setItem('lastline-last-reset', new Date().toDateString());
+        localStorage.setItem('lastline-last-reset', newDay);
       }
 
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -43,20 +57,23 @@ function App() {
   const gainExp = (taskKey) => {
     if (completedTasks[taskKey]) return;
 
-    if (exp < maxExp) {
-      setExp(prev => Math.min(prev + 20, maxExp));
-      setCompletedTasks(prev => ({ ...prev, [taskKey]: true }));
-    } else {
-      setLevel(prev => prev + 1);
-      setExp(0);
+    let newExp = exp + 20;
+    let newLevel = level;
+
+    if (newExp >= maxExp) {
+      newLevel += 1;
+      newExp = 0;
     }
+
+    setExp(newExp);
+    setLevel(newLevel);
+    setCompletedTasks(prev => ({ ...prev, [taskKey]: true }));
   };
 
   const handleFapReset = () => {
     if(window.confirm("BẠN VỪA PHÁ VỠ KỶ LUẬT? Level và EXP sẽ về 0, nhưng nhiệm vụ hôm nay vẫn được giữ.")) {
       setExp(0);
       setLevel(0);
-      // Không reset completedTasks ở đây theo yêu cầu
     }
   };
 
@@ -82,7 +99,7 @@ function App() {
 
         <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
           
-          {/* Level Display - Updated to "Level X" style */}
+          {/* Level Display */}
           <div className="flex justify-between items-baseline mb-8">
             <div className="flex items-baseline gap-4">
               <span className="text-4xl font-black text-slate-500 uppercase italic">Level</span>
@@ -105,7 +122,7 @@ function App() {
             ></div>
           </div>
 
-          {/* Task Grid - Updated DONE state */}
+          {/* Task Grid */}
           <div className="space-y-4">
             <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.5em] mb-6 text-center">Nhiệm vụ hàng ngày (+20 EXP/Quest)</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
