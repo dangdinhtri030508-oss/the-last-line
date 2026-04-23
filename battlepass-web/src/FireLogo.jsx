@@ -6,21 +6,24 @@ const FireLogo = ({ size = 60, isCompleted = false }) => {
       width={size} 
       height={size} 
       viewBox="0 0 128 128" 
-      className="fire-logo-cyber"
+      // Class fire-logo-cyber sẽ kích hoạt hoạt ảnh bập bùng từ index.css
+      className={isCompleted ? "fire-logo-cyber" : ""}
       style={{
-        opacity: isCompleted ? 1 : 0.2, // Mờ đi khi chưa xong task
-        filter: isCompleted 
-          ? 'drop-shadow(0 0 20px rgba(138, 43, 226, 0.8))' 
-          : 'none'
+        opacity: isCompleted ? 1 : 0.2, // Mờ đi khi chưa xong hết task
+        transition: 'all 0.8s ease-in-out',
+        // Giữ gốc ngọn lửa cố định để phần ngọn bập bùng tự nhiên hơn
+        transformOrigin: 'bottom center'
       }}
     >
       <defs>
+        {/* Gradient màu Tím - Xanh Royal - Cyan theo đúng mẫu ông gửi */}
         <linearGradient id="cyberGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#8A2BE2" />
-          <stop offset="50%" stopColor="#4169E1" />
-          <stop offset="100%" stopColor="#00BFFF" />
+          <stop offset="0%" stopColor="#8A2BE2" />   {/* Tím */}
+          <stop offset="50%" stopColor="#4169E1" />  {/* Xanh Royal */}
+          <stop offset="100%" stopColor="#00BFFF" /> {/* Cyan */}
         </linearGradient>
       </defs>
+      
       <path 
         d="M64,128C36.4,128,14,105.6,14,78c0-12.8,4.8-24.5,12.7-33.3C34.6,36.7,46,30.3,58.8,28.7c2.1,1.1,4.2,2.3,6.2,3.6
            c-10.4,5.4-18,16.2-18,28.7c0,17.7,14.3,32,32,32c7.6,0,14.6-2.6,20.1-7.1C92.2,95.7,79.2,103,64,103c-1.3,0-2.6-0.1-3.9-0.2

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import FireLogo from './FireLogo'; // Import component ngọn lửa ông vừa tạo
+import FireLogo from './FireLogo'; 
 
 function App() {
   const [exp, setExp] = useState(() => Number(localStorage.getItem('lastline-exp')) || 0);
@@ -11,12 +11,10 @@ function App() {
     const lastReset = localStorage.getItem('lastline-last-reset');
     const today = new Date().toDateString();
 
-    // Logic kiểm tra reset ngày mới
     if (lastReset !== today) {
-      // Trước khi reset task, kiểm tra xem hôm qua có hoàn thành hết không để tính Streak
       const wasCompleted = saved ? Object.values(JSON.parse(saved)).every(t => t === true) : false;
       if (!wasCompleted) {
-        setStreak(0); // Nếu hôm qua bỏ lỡ dù chỉ 1 task, streak về 0
+        setStreak(0);
         localStorage.setItem('lastline-streak', 0);
       }
       return { math: false, physics: false, flute: false, python: false, deadhang: false };
@@ -27,10 +25,8 @@ function App() {
   const [timeLeft, setTimeLeft] = useState("");
   const maxExp = 1000;
 
-  // Kiểm tra xem hôm nay đã xong hết chưa
   const isTodayCompleted = Object.values(completedTasks).every(task => task === true);
 
-  // --- LOGIC RESET & COUNTDOWN ---
   useEffect(() => {
     const today = new Date().toDateString();
     localStorage.setItem('lastline-last-reset', today);
@@ -42,18 +38,17 @@ function App() {
       const diff = midnight - now;
       
       if (diff <= 0) {
-        window.location.reload(); // Reload để trigger logic tính streak ở trên
+        window.location.reload();
       }
 
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / (1000 * 60)) % 60);
       const s = Math.floor((diff / 1000) % 60);
-      setTimeLeft(`${h}h ${m}s ${s}s`);
+      setTimeLeft(`${h}h ${m}m ${s}s`);
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // --- LƯU DỮ LIỆU ---
   useEffect(() => {
     localStorage.setItem('lastline-exp', exp);
     localStorage.setItem('lastline-level', level);
@@ -61,10 +56,8 @@ function App() {
     localStorage.setItem('lastline-streak', streak);
   }, [exp, level, completedTasks, streak]);
 
-  // Logic tăng streak khi vừa chạm mốc 5 tasks
   useEffect(() => {
     if (isTodayCompleted) {
-      // Chỉ tăng streak nếu hôm nay chưa được ghi nhận hoàn thành
       const lastReset = localStorage.getItem('lastline-last-reset');
       const streakUpdatedDate = localStorage.getItem('lastline-streak-date');
       if (streakUpdatedDate !== lastReset) {
@@ -74,7 +67,6 @@ function App() {
     }
   }, [isTodayCompleted]);
 
-  // --- HÀNH ĐỘNG ---
   const gainExp = (taskKey) => {
     if (completedTasks[taskKey]) return;
 
@@ -96,6 +88,7 @@ function App() {
       setExp(0);
       setLevel(0);
       setStreak(0);
+      localStorage.removeItem('lastline-streak-date');
     }
   };
 
@@ -104,7 +97,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#020617] text-white p-4 md:p-8 font-sans relative overflow-hidden crt-effect">
-      
       <div className="scanlines"></div>
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -124,24 +116,28 @@ function App() {
 
         <div className="bg-[#0f172a]/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
           
-          {/* Level & Streak Display */}
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-6">
+          {/* Level & Streak Display - BỐ CỤC ĐÃ FIX KHOẢNG CÁCH */}
+          <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-8">
+            <div className="flex items-center gap-12">
               <div className="flex items-baseline gap-4">
                 <span className="text-4xl font-black text-slate-500 uppercase italic">Level</span>
-                <span className="text-8xl md:text-9xl font-mono font-black text-[#00f2ff] drop-shadow-[0_0_25px_rgba(0,242,255,0.4)] tracking-tighter">
+                <span className="text-8xl md:text-9xl font-mono font-black text-[#00f2ff] drop-shadow-[0_0_30px_rgba(0,242,255,0.4)] tracking-tighter">
                   {level.toString().padStart(2, '0')}
                 </span>
               </div>
-              
-              {/* Logo Ngọn lửa nhấp nháy */}
-              <div className="relative flex flex-col items-center">
-                <FireLogo size={100} isCompleted={isTodayCompleted} />
+
+              {/* Cụm Ngọn lửa & Streak: ml-10 để tách biệt khỏi Level */}
+              <div className="flex flex-col items-center ml-4">
+                <div className="relative flex justify-center items-center">
+                  <FireLogo size={110} isCompleted={isTodayCompleted} />
+                </div>
+                
+                {/* Chữ Streak mới: To, rõ, có nền để nổi bật */}
                 {streak > 0 && (
-                  <div className="absolute -bottom-4 bg-purple-600/20 px-3 py-1 rounded-full border border-purple-500/50">
-                    <span className="text-[10px] font-black text-purple-400 uppercase tracking-tighter">
+                  <div className="mt-4 px-5 py-1.5 bg-black/60 border border-purple-500/30 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(138,43,226,0.2)]">
+                    <p className="streak-text-cyber text-sm animate-pulse whitespace-nowrap">
                       STREAK: {streak} DAYS
-                    </span>
+                    </p>
                   </div>
                 )}
               </div>
