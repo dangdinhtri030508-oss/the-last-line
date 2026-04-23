@@ -35,3 +35,22 @@
   pointer-events: none;
   z-index: 101;
 }
+/* Hiệu ứng nhấp nháy của logo ngọn lửa Cyberpunk */
+@keyframes flame-glitch {
+  0% { opacity: 0.98; filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.4)); }
+  5% { opacity: 0.95; filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.6)); }
+  10% { opacity: 0.99; filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.4)); }
+  20% { opacity: 1; filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.4)); }
+  100% { opacity: 1; filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.4)); }
+}
+
+.fire-logo-cyber {
+  animation: flame-glitch 2s infinite ease-in-out;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+.fire-logo-cyber:hover {
+  filter: drop-shadow(0 0 30px rgba(138, 43, 226, 0.9)) saturate(200%);
+  transform: scale(1.05);
+}
