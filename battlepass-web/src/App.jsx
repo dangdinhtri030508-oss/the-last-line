@@ -101,9 +101,9 @@ function App() {
 
       <div className="max-w-5xl mx-auto relative z-10">
         
-        {/* Header Section */}
+        {/* Header Section - ĐÃ FIX CHỮ E BỊ CẮT */}
         <div className="border-b-2 border-slate-800 pb-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic tracking-tighter">
+          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic tracking-tighter pr-4">
             THE LAST LINE
           </h1>
           <div className="flex flex-col items-center md:items-end">
@@ -116,7 +116,7 @@ function App() {
 
         <div className="bg-[#0f172a]/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
           
-          {/* Level & Streak Display - BỐ CỤC ĐÃ FIX KHOẢNG CÁCH */}
+          {/* Level & Streak Display */}
           <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-8">
             <div className="flex items-center gap-12">
               <div className="flex items-baseline gap-4">
@@ -126,13 +126,11 @@ function App() {
                 </span>
               </div>
 
-              {/* Cụm Ngọn lửa & Streak: ml-10 để tách biệt khỏi Level */}
               <div className="flex flex-col items-center ml-4">
                 <div className="relative flex justify-center items-center">
                   <FireLogo size={110} isCompleted={isTodayCompleted} />
                 </div>
                 
-                {/* Chữ Streak mới: To, rõ, có nền để nổi bật */}
                 {streak > 0 && (
                   <div className="mt-4 px-5 py-1.5 bg-black/60 border border-purple-500/30 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(138,43,226,0.2)]">
                     <p className="streak-text-cyber text-sm animate-pulse whitespace-nowrap">
