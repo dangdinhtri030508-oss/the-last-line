@@ -167,7 +167,6 @@ function App() {
               </div>
             </div>
 
-            {/* CẬP NHẬT: Text EXP nổi bật hơn */}
             <div className="text-right">
               <span className="text-yellow-400 text-xl md:text-2xl font-mono font-black drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">
                 {exp} <span className="text-sm text-orange-500/80">/ {maxExp} EXP</span>
@@ -175,14 +174,14 @@ function App() {
             </div>
           </div>
 
-          {/* CẬP NHẬT: Progress Bar màu Cam-Vàng Neon */}
-          <div className="w-full h-7 bg-black/60 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+          {/* FIX: Progress Bar không còn hình bình hành trắng */}
+          <div className="w-full h-7 bg-black/40 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1 relative shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)]">
             <div 
-              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 transition-all duration-1000 ease-out rounded-full shadow-[0_0_20px_rgba(251,191,36,0.6)] relative" 
+              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 transition-all duration-1000 ease-out rounded-full shadow-[0_0_25px_rgba(251,191,36,0.5)] relative overflow-hidden" 
               style={{ width: `${(exp / maxExp) * 100}%` }}
             >
-                {/* Thêm hiệu ứng quét sáng (glossy) */}
-                <div className="absolute inset-0 bg-white/20 skew-x-[-20deg] animate-[pulse_2s_infinite]"></div>
+              {/* Hiệu ứng dải sáng chạy thay thế cho hình bình hành cũ */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
             </div>
           </div>
 
