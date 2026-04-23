@@ -8,6 +8,7 @@ function App() {
     const lastReset = localStorage.getItem('lastline-last-reset');
     const today = new Date().toDateString();
 
+    // Logic kiểm tra reset ngày mới
     if (lastReset !== today) {
       return { math: false, physics: false, flute: false, python: false, deadhang: false };
     }
@@ -17,6 +18,7 @@ function App() {
 
   const maxExp = 1000;
 
+  // --- LOGIC RESET & COUNTDOWN ---
   useEffect(() => {
     const today = new Date().toDateString();
     localStorage.setItem('lastline-last-reset', today);
@@ -41,12 +43,14 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  // --- LƯU DỮ LIỆU ---
   useEffect(() => {
     localStorage.setItem('lastline-exp', exp);
     localStorage.setItem('lastline-level', level);
     localStorage.setItem('lastline-tasks', JSON.stringify(completedTasks));
   }, [exp, level, completedTasks]);
 
+  // --- HÀNH ĐỘNG ---
   const gainExp = (taskKey) => {
     if (completedTasks[taskKey]) return;
 
@@ -76,7 +80,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[#020617] text-white p-4 md:p-8 font-sans relative overflow-hidden crt-effect">
       
-      {/* Hiệu ứng Scanline Cyberpunk */}
+      {/* Lớp phủ Scanline (Cần file index.css đã cập nhật) */}
       <div className="scanlines"></div>
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -88,19 +92,19 @@ function App() {
           </h1>
           <div className="flex flex-col items-center md:items-end">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Hết ngày sau</span>
-            <div className="text-3xl font-mono font-black text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">
+            <div className="text-3xl font-mono font-black text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]">
               {timeLeft}
             </div>
           </div>
         </div>
 
-        <div className="bg-[#0f172a]/80 backdrop-blur-md border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
+        <div className="bg-[#0f172a]/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
           
-          {/* Level Display - Digital Style */}
+          {/* Level Display - Digital Neon Style */}
           <div className="flex justify-between items-baseline mb-8">
             <div className="flex items-baseline gap-4">
               <span className="text-4xl font-black text-slate-500 uppercase italic">Level</span>
-              <span className="text-8xl md:text-9xl font-mono font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.25)] tracking-tighter">
+              <span className="text-8xl md:text-9xl font-mono font-black text-[#00f2ff] drop-shadow-[0_0_25px_rgba(0,242,255,0.4)] tracking-tighter">
                 {level.toString().padStart(2, '0')}
               </span>
             </div>
@@ -114,7 +118,7 @@ function App() {
           {/* Progress Bar */}
           <div className="w-full h-6 bg-black/60 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1">
             <div 
-              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 transition-all duration-1000 ease-out rounded-full shadow-[0_0_20px_rgba(249,115,22,0.4)]" 
+              className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 transition-all duration-1000 ease-out rounded-full shadow-[0_0_20px_rgba(6,182,212,0.4)]" 
               style={{ width: `${(exp / maxExp) * 100}%` }}
             ></div>
           </div>
@@ -173,7 +177,7 @@ function App() {
           <div className="flex justify-center border-t border-slate-800 pt-10">
             <button 
               onClick={handleFapReset}
-              className="px-12 py-4 bg-red-600/20 border-2 border-red-600 text-red-500 font-black rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-[0.2em] shadow-lg active:scale-90"
+              className="px-12 py-4 bg-red-600/20 border-2 border-red-600 text-red-500 font-black rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-[0.2em] shadow-lg active:scale-95"
             >
               FAP (RESET LEVEL & EXP)
             </button>
