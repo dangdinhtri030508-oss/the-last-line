@@ -8,7 +8,6 @@ function App() {
     const lastReset = localStorage.getItem('lastline-last-reset');
     const today = new Date().toDateString();
 
-    // KIỂM TRA NGAY KHI LOAD TRANG: Nếu ngày lưu khác ngày hiện tại -> Reset task
     if (lastReset !== today) {
       return { math: false, physics: false, flute: false, python: false, deadhang: false };
     }
@@ -18,20 +17,16 @@ function App() {
 
   const maxExp = 1000;
 
-  // --- LOGIC RESET & COUNTDOWN ---
   useEffect(() => {
-    // 1. Cập nhật ngày reset cuối cùng vào localStorage lần đầu
     const today = new Date().toDateString();
     localStorage.setItem('lastline-last-reset', today);
 
-    // 2. Chạy timer mỗi giây
     const timer = setInterval(() => {
       const now = new Date();
       const midnight = new Date();
       midnight.setHours(24, 0, 0, 0);
       const diff = midnight - now;
       
-      // Nếu đúng thời điểm giao thừa
       if (diff <= 0) {
         const newDay = new Date().toDateString();
         setCompletedTasks({ math: false, physics: false, flute: false, python: false, deadhang: false });
@@ -46,14 +41,12 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // --- PERSISTENCE ---
   useEffect(() => {
     localStorage.setItem('lastline-exp', exp);
     localStorage.setItem('lastline-level', level);
     localStorage.setItem('lastline-tasks', JSON.stringify(completedTasks));
   }, [exp, level, completedTasks]);
 
-  // --- ACTIONS ---
   const gainExp = (taskKey) => {
     if (completedTasks[taskKey]) return;
 
@@ -81,34 +74,38 @@ function App() {
   const reward1000 = level === 5 ? "Figure Naruto < 500k" : "Mì Ramen";
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white p-4 md:p-8 font-sans">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-[#020617] text-white p-4 md:p-8 font-sans relative overflow-hidden crt-effect">
+      
+      {/* Hiệu ứng Scanline Cyberpunk */}
+      <div className="scanlines"></div>
+
+      <div className="max-w-5xl mx-auto relative z-10">
         
         {/* Header Section */}
         <div className="border-b-2 border-slate-800 pb-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic">
+          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic tracking-tighter">
             THE LAST LINE
           </h1>
           <div className="flex flex-col items-center md:items-end">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Hết ngày sau</span>
-            <div className="text-3xl font-mono font-black text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.6)] animate-pulse">
+            <div className="text-3xl font-mono font-black text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">
               {timeLeft}
             </div>
           </div>
         </div>
 
-        <div className="bg-[#0f172a] border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
+        <div className="bg-[#0f172a]/80 backdrop-blur-md border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
           
-          {/* Level Display */}
+          {/* Level Display - Digital Style */}
           <div className="flex justify-between items-baseline mb-8">
             <div className="flex items-baseline gap-4">
               <span className="text-4xl font-black text-slate-500 uppercase italic">Level</span>
-              <span className="text-8xl font-black text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-                {level}
+              <span className="text-8xl md:text-9xl font-mono font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.25)] tracking-tighter">
+                {level.toString().padStart(2, '0')}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-slate-400 text-xl font-mono font-bold">
+              <span className="text-slate-400 text-xl md:text-2xl font-mono font-bold">
                 {exp} <span className="text-sm opacity-50">/ {maxExp} EXP</span>
               </span>
             </div>
@@ -156,17 +153,17 @@ function App() {
 
           {/* Rewards Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-12">
-            <div className={`p-6 rounded-2xl border-2 flex items-center gap-6 ${exp >= 500 ? "bg-yellow-500/10 border-yellow-400" : "bg-black/40 border-slate-800 opacity-20 grayscale"}`}>
+            <div className={`p-6 rounded-2xl border-2 flex items-center gap-6 ${exp >= 500 ? "bg-yellow-500/10 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.2)]" : "bg-black/40 border-slate-800 opacity-20 grayscale"}`}>
               <div className="text-5xl">{level === 5 ? "🦊" : "🧋"}</div>
               <div>
-                <p className="text-2xl font-black uppercase italic">{reward500}</p>
+                <p className="text-2xl font-black uppercase italic tracking-tighter">{reward500}</p>
                 <p className="text-[10px] font-bold text-slate-500 uppercase">Mốc 500 EXP</p>
               </div>
             </div>
-            <div className={`p-6 rounded-2xl border-2 flex items-center gap-6 ${exp >= 1000 ? "bg-red-500/10 border-red-400" : "bg-black/40 border-slate-800 opacity-20 grayscale"}`}>
+            <div className={`p-6 rounded-2xl border-2 flex items-center gap-6 ${exp >= 1000 ? "bg-red-500/10 border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "bg-black/40 border-slate-800 opacity-20 grayscale"}`}>
               <div className="text-5xl">{level === 5 ? "🗡️" : "🍜"}</div>
               <div>
-                <p className="text-2xl font-black uppercase italic">{reward1000}</p>
+                <p className="text-2xl font-black uppercase italic tracking-tighter">{reward1000}</p>
                 <p className="text-[10px] font-bold text-slate-500 uppercase">Mốc 1000 EXP</p>
               </div>
             </div>
@@ -176,7 +173,7 @@ function App() {
           <div className="flex justify-center border-t border-slate-800 pt-10">
             <button 
               onClick={handleFapReset}
-              className="px-12 py-4 bg-red-600/20 border-2 border-red-600 text-red-500 font-black rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-[0.2em] shadow-lg"
+              className="px-12 py-4 bg-red-600/20 border-2 border-red-600 text-red-500 font-black rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-[0.2em] shadow-lg active:scale-90"
             >
               FAP (RESET LEVEL & EXP)
             </button>
