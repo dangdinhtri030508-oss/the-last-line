@@ -34,12 +34,10 @@ function App() {
   const bgmRef = useRef(null);
 
   useEffect(() => {
-    // Khởi tạo nhạc nền
     bgmRef.current = new Audio(bgmFile);
     bgmRef.current.loop = true;
-    bgmRef.current.volume = 0.2; // Nhạc nền vừa đủ nghe để không bị chói
+    bgmRef.current.volume = 0.2;
 
-    // Trình duyệt chặn autoplay, nên sẽ phát nhạc sau lần tương tác đầu tiên
     const handleFirstInteraction = () => {
       bgmRef.current.play().catch(err => console.log("Chờ tương tác..."));
       window.removeEventListener('click', handleFirstInteraction);
@@ -54,7 +52,7 @@ function App() {
 
   const playSfx = () => {
     const sfx = new Audio(sfxFile);
-    sfx.volume = 0.5; // SFX to hơn BGM một chút để tạo cảm giác phản hồi tốt
+    sfx.volume = 0.5;
     sfx.play();
   };
 
@@ -99,17 +97,13 @@ function App() {
 
   const gainExp = (taskKey) => {
     if (completedTasks[taskKey]) return;
-
-    playSfx(); // Phát âm thanh khi nhấn hoàn thành task
-
+    playSfx();
     let newExp = exp + 20;
     let newLevel = level;
-
     if (newExp >= maxExp) {
       newLevel += 1;
       newExp = 0;
     }
-
     setExp(newExp);
     setLevel(newLevel);
     setCompletedTasks(prev => ({ ...prev, [taskKey]: true }));
@@ -173,19 +167,23 @@ function App() {
               </div>
             </div>
 
+            {/* CẬP NHẬT: Text EXP nổi bật hơn */}
             <div className="text-right">
-              <span className="text-slate-400 text-xl md:text-2xl font-mono font-bold">
-                {exp} <span className="text-sm opacity-50">/ {maxExp} EXP</span>
+              <span className="text-yellow-400 text-xl md:text-2xl font-mono font-black drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">
+                {exp} <span className="text-sm text-orange-500/80">/ {maxExp} EXP</span>
               </span>
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full h-6 bg-black/60 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1">
+          {/* CẬP NHẬT: Progress Bar màu Cam-Vàng Neon */}
+          <div className="w-full h-7 bg-black/60 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
             <div 
-              className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 transition-all duration-1000 ease-out rounded-full shadow-[0_0_20px_rgba(6,182,212,0.4)]" 
+              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 transition-all duration-1000 ease-out rounded-full shadow-[0_0_20px_rgba(251,191,36,0.6)] relative" 
               style={{ width: `${(exp / maxExp) * 100}%` }}
-            ></div>
+            >
+                {/* Thêm hiệu ứng quét sáng (glossy) */}
+                <div className="absolute inset-0 bg-white/20 skew-x-[-20deg] animate-[pulse_2s_infinite]"></div>
+            </div>
           </div>
 
           {/* Task Grid */}
