@@ -28,7 +28,12 @@ function App() {
 
   const [timeLeft, setTimeLeft] = useState("");
   const maxExp = 1000;
-  const isTodayCompleted = Object.values(completedTasks).every(task => task === true);
+  
+  // Logic kiểm tra hoàn thành và tính % cho ngọn lửa
+  const completedCount = Object.values(completedTasks).filter(task => task === true).length;
+  const totalTasks = Object.keys(completedTasks).length;
+  const taskProgress = (completedCount / totalTasks) * 100; 
+  const isTodayCompleted = completedCount === totalTasks;
 
   // --- HỆ THỐNG ÂM THANH ---
   const bgmRef = useRef(null);
@@ -154,7 +159,8 @@ function App() {
 
               <div className="flex flex-col items-center ml-4">
                 <div className="relative flex justify-center items-center">
-                  <FireLogo size={110} isCompleted={isTodayCompleted} />
+                  {/* Ngọn lửa sáng dần theo taskProgress */}
+                  <FireLogo size={110} progress={taskProgress} isCompleted={isTodayCompleted} />
                 </div>
                 
                 {streak > 0 && (
@@ -174,13 +180,12 @@ function App() {
             </div>
           </div>
 
-          {/* FIX: Progress Bar không còn hình bình hành trắng */}
+          {/* Progress Bar */}
           <div className="w-full h-7 bg-black/40 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1 relative shadow-[inset_0_2px_10px_rgba(0,0,0,0.8)]">
             <div 
               className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 transition-all duration-1000 ease-out rounded-full shadow-[0_0_25px_rgba(251,191,36,0.5)] relative overflow-hidden" 
               style={{ width: `${(exp / maxExp) * 100}%` }}
             >
-              {/* Hiệu ứng dải sáng chạy thay thế cho hình bình hành cũ */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
             </div>
           </div>
