@@ -197,9 +197,9 @@ function App() {
               {[
                 { id: 'math', label: '1 Đề Toán', color: 'bg-rose-900/40 border-rose-600 text-rose-400' },
                 { id: 'physics', label: '1 Đề Lý', color: 'bg-blue-900/40 border-blue-600 text-blue-400' },
-                { id: 'flute', label: '5 Vòng Sáo', color: 'bg-emerald-900/40 border-emerald-600 text-emerald-400' },
-                { id: 'python', label: '3 Python Mod', color: 'bg-indigo-900/40 border-indigo-600 text-indigo-400' },
-                { id: 'deadhang', label: 'Deadhang', color: 'bg-slate-800/60 border-slate-500 text-slate-300' }
+                { id: 'flute', label: '5 Set Sáo', color: 'bg-emerald-900/40 border-emerald-600 text-emerald-400' },
+                { id: 'python', label: '1 Python Mod', color: 'bg-indigo-900/40 border-indigo-600 text-indigo-400' },
+                { id: 'deadhang', label: '3 Rep Deadhang', color: 'bg-slate-800/60 border-slate-500 text-slate-300' }
               ].map(task => (
                 <button 
                   key={task.id}
