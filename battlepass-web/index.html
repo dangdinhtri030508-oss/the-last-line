@@ -1,37 +1,25 @@
 <!doctype html>
+
 <html lang="en">
+
   <head>
+
     <meta charset="UTF-8" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>battlepass-web</title>
-    <style>
-      /* Đảm bảo canvas không chặn tương tác của React App */
-      #piston-particle-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        pointer-events: none;
-        z-index: 9999;
-      }
-      
-      /* Reset cơ bản để tránh tràn layout khi thêm element mới */
-      body {
-        margin: 0;
-        overflow-x: hidden;
-      }
-    </style>
+
   </head>
+
   <body>
-    <!-- Root của React App giữ nguyên -->
+
     <div id="root"></div>
 
-    <!-- Canvas riêng biệt cho hiệu ứng High-Score Kinetic Piston -->
-    <canvas id="piston-particle-canvas"></canvas>
-
-    <!-- Script chính của dự án -->
     <script type="module" src="/src/main.jsx"></script>
+
   </body>
+
 </html>

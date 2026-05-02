@@ -1,169 +1,165 @@
 @import "tailwindcss";
 
-/* --- HỆ THỐNG CŨ (GIỮ NGUYÊN) --- */
 
-/* 1. Hệ thống Scanline & Vignette */
+
+/* 1. Hệ thống Scanline & Vignette (Nền tĩnh bảo vệ mắt) */
+
 .scanlines {
+
   position: fixed;
+
   top: 0;
+
   left: 0;
+
   width: 100%;
+
   height: 100%;
+
   background: linear-gradient(
+
     rgba(18, 16, 16, 0) 50%,
+
     rgba(0, 0, 0, 0.1) 50%
+
   );
+
   background-size: 100% 2px;
+
   pointer-events: none;
+
   z-index: 100;
+
   opacity: 0.6;
+
 }
+
+
 
 .crt-effect {
+
   position: relative;
+
 }
+
+
 
 .crt-effect::after {
+
   content: " ";
+
   display: block;
+
   position: fixed;
+
   top: 0;
+
   left: 0;
+
   bottom: 0;
+
   right: 0;
+
   background: radial-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 100%);
+
   pointer-events: none;
+
   z-index: 101;
+
 }
 
-/* 2. Hiệu ứng MORPH & GLOW (Fire Logo) */
+
+
+/* 2. Hiệu ứng MORPH & GLOW (Làm lửa bập bùng như thật) */
+
 @keyframes fire-morph-cyber {
-  0% { transform: scale(1) translateY(0) rotate(-1deg); filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.5)); }
-  25% { transform: scale(1.05) translateY(-4px) rotate(1deg); filter: drop-shadow(0 0 25px rgba(65, 105, 225, 0.7)); }
-  50% { transform: scale(0.95) translateY(0) rotate(-1deg); filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.5)); }
-  75% { transform: scale(1.08) translateY(-6px) rotate(2deg); filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.6)); }
-  100% { transform: scale(1) translateY(0) rotate(-1deg); }
+
+  0% {
+
+    transform: scale(1) translateY(0) rotate(-1deg);
+
+    filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.5));
+
+  }
+
+  25% {
+
+    transform: scale(1.05) translateY(-4px) rotate(1deg); /* Lửa bốc lên và hơi nghiêng */
+
+    filter: drop-shadow(0 0 25px rgba(65, 105, 225, 0.7));
+
+  }
+
+  50% {
+
+    transform: scale(0.95) translateY(0) rotate(-1deg); /* Lửa co lại */
+
+    filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.5));
+
+  }
+
+  75% {
+
+    transform: scale(1.08) translateY(-6px) rotate(2deg); /* Bùng cao nhất */
+
+    filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.6));
+
+  }
+
+  100% {
+
+    transform: scale(1) translateY(0) rotate(-1deg);
+
+  }
+
 }
+
+
 
 .fire-logo-cyber {
+
   cursor: pointer;
+
   transition: all 0.3s ease-out;
+
+  /* Chạy hiệu ứng bập bùng liên tục */
+
   animation: fire-morph-cyber 1.5s infinite ease-in-out;
-  transform-origin: bottom center;
+
+  transform-origin: bottom center; /* Giữ gốc ngọn lửa cố định ở dưới */
+
 }
+
+
 
 .fire-logo-cyber:hover {
+
   filter: drop-shadow(0 0 45px rgba(138, 43, 226, 1)) saturate(250%);
+
   transform: scale(1.1);
+
 }
+
+
 
 /* 3. Hiệu ứng chữ Streak rực rỡ */
+
 .streak-text-cyber {
+
   background: linear-gradient(90deg, #8A2BE2, #4169E1, #00BFFF);
+
   -webkit-background-clip: text;
+
   background-clip: text;
+
   color: transparent;
+
   font-weight: 900;
+
   text-transform: uppercase;
+
   letter-spacing: 0.15em;
+
   filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.5));
-}
 
-/* --- HỆ THỐNG MỚI: HIGH-SCORE KINETIC PISTON --- */
-
-/* Thùng chứa Piston */
-.piston-container {
-  position: relative;
-  width: 60px;
-  height: 300px;
-  background: rgba(20, 20, 20, 0.8);
-  border: 2px solid #333;
-  border-radius: 10px;
-  overflow: hidden;
-  user-select: none;
-  touch-action: none; /* Quan trọng để drag trên mobile */
-}
-
-/* Ống trụ Cylinder */
-.cylinder-fill {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(to top, #ffcc00, #ffffff);
-  transition: height 0.1s ease-out, background 0.3s ease;
-}
-
-/* Trạng thái Overdrive (Giai đoạn B: Phá kỷ lục) */
-.piston-overdrive .cylinder-fill {
-  background: linear-gradient(to top, #00f2ff, #ffffff);
-  box-shadow: 0 0 20px rgba(0, 242, 255, 0.8);
-}
-
-/* Hiệu ứng rung lắc (Shake) */
-@keyframes piston-shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
-}
-
-.shake-intense {
-  animation: piston-shake 0.2s cubic-bezier(.36,.07,.19,.97) infinite;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
-
-/* Sóng xung kích khi thả tay (Shockwave) */
-.shockwave-active::before {
-  content: '';
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: shockwave-animate 0.6s ease-out;
-  pointer-events: none;
-  z-index: 102;
-}
-
-@keyframes shockwave-animate {
-  from { width: 0; height: 0; opacity: 1; }
-  to { width: 1000px; height: 1000px; opacity: 0; }
-}
-
-/* Flash trắng toàn màn hình */
-.flash-white {
-  animation: flash-animation 0.4s ease-out;
-}
-
-@keyframes flash-animation {
-  0% { background: white; opacity: 1; }
-  100% { background: transparent; opacity: 0; }
-}
-/* Đầu Pít-tông - Cái để người dùng 'cầm' kéo */
-.piston-handle {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 110%; /* Rộng hơn ống một chút cho dễ cầm */
-  height: 15px;
-  background: linear-gradient(90deg, #475569, #94a3b8, #475569); /* Màu kim loại */
-  border: 2px solid #1e293b;
-  border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.1);
-  z-index: 10;
-  transition: bottom 0.1s ease-out;
-  cursor: ns-resize;
-}
-
-/* Hiệu ứng tia lửa nhỏ khi kéo Overdrive */
-.piston-overdrive .piston-handle {
-  background: linear-gradient(90deg, #00f2ff, #ffffff, #00f2ff);
-  box-shadow: 0 0 20px rgba(0, 242, 255, 0.8);
-  border-color: #ffffff;
 }
