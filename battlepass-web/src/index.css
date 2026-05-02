@@ -145,3 +145,25 @@
   0% { background: white; opacity: 1; }
   100% { background: transparent; opacity: 0; }
 }
+/* Đầu Pít-tông - Cái để người dùng 'cầm' kéo */
+.piston-handle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110%; /* Rộng hơn ống một chút cho dễ cầm */
+  height: 15px;
+  background: linear-gradient(90deg, #475569, #94a3b8, #475569); /* Màu kim loại */
+  border: 2px solid #1e293b;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.1);
+  z-index: 10;
+  transition: bottom 0.1s ease-out;
+  cursor: ns-resize;
+}
+
+/* Hiệu ứng tia lửa nhỏ khi kéo Overdrive */
+.piston-overdrive .piston-handle {
+  background: linear-gradient(90deg, #00f2ff, #ffffff, #00f2ff);
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.8);
+  border-color: #ffffff;
+}
