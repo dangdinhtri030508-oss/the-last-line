@@ -36,7 +36,6 @@ function App() {
   const [isOverdrive, setIsOverdrive] = useState(false);
   const pistonRef = useRef(null);
   const chargingInterval = useRef(null);
-  const canvasRef = useRef(null);
 
   // --- HỆ THỐNG ÂM THANH ---
   const bgmRef = useRef(null);
@@ -69,9 +68,9 @@ function App() {
       particles.push({
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
-        vx: (Math.random() - 0.5) * (isSuper ? 20 : 10),
-        vy: (Math.random() - 0.5) * (isSuper ? 20 : 10),
-        size: Math.random() * (isSuper ? 5 : 3),
+        vx: (Math.random() - 0.5) * (isSuper ? 25 : 12),
+        vy: (Math.random() - 0.5) * (isSuper ? 25 : 12),
+        size: Math.random() * (isSuper ? 6 : 3),
         alpha: 1
       });
     }
@@ -81,7 +80,7 @@ function App() {
       particles.forEach((p, i) => {
         p.x += p.vx;
         p.y += p.vy;
-        p.alpha -= 0.02;
+        p.alpha -= 0.015;
         ctx.fillStyle = color.replace('1)', `${p.alpha})`);
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -94,72 +93,79 @@ function App() {
   };
 
   // --- LOGIC PISTON ---
-  const handleStart = () => setIsDragging(true);
+  const handleStart = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setTempStreak(0);
+  };
 
   const handleMove = (e) => {
     if (!isDragging) return;
+    
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const rect = pistonRef.current.getBoundingClientRect();
-    const pos = Math.max(0, Math.min(1, (rect.bottom - clientY) / rect.height));
     
-    const val = Math.floor(pos * personalBest);
-    setTempStreak(val);
+    // Tính toán tỷ lệ kéo từ dưới lên (0 đến 1)
+    let pos = (rect.bottom - clientY) / rect.height;
+    pos = Math.max(0, Math.min(1, pos));
+    
+    // Mốc x (Personal Best)
+    const x = personalBest || 1; 
+    const currentVal = Math.floor(pos * x);
+    setTempStreak(currentVal);
 
-    if (val >= personalBest && personalBest > 0) {
+    // Kiểm tra Overdrive khi chạm đỉnh mốc cũ
+    if (currentVal >= x && x > 0) {
       if (!isOverdrive) {
         setIsOverdrive(true);
         startCharging();
       }
     } else {
       setIsOverdrive(false);
-      clearInterval(chargingInterval.current);
+      if (chargingInterval.current) clearInterval(chargingInterval.current);
     }
   };
 
   const startCharging = () => {
-    clearInterval(chargingInterval.current);
+    if (chargingInterval.current) clearInterval(chargingInterval.current);
     chargingInterval.current = setInterval(() => {
       setTempStreak(prev => {
         const next = prev + 1;
-        if (next > 100) { // Giới hạn max 100 ngày
+        if (next > 100) { 
             clearInterval(chargingInterval.current);
             return 100;
         }
-        // Haptic feedback & Sound Pitch (giả lập)
-        if (window.navigator.vibrate) window.navigator.vibrate(10);
+        if (window.navigator.vibrate) window.navigator.vibrate(15);
         return next;
       });
-    }, 100);
+    }, 80); // Tốc độ nhảy số khi nén
   };
 
   const handleRelease = () => {
     if (!isDragging) return;
     setIsDragging(false);
     setIsOverdrive(false);
-    clearInterval(chargingInterval.current);
+    if (chargingInterval.current) clearInterval(chargingInterval.current);
 
     const n = tempStreak;
     const x = personalBest;
 
     if (n > x) {
-      // PHÁ KỶ LỤC: SUPERNOVA
       setPersonalBest(n);
       localStorage.setItem('lastline-pb', n);
       setStreak(n);
-      createExplosion(200, 'rgba(0, 242, 255, 1)', true);
+      createExplosion(250, 'rgba(0, 242, 255, 1)', true);
       document.body.classList.add('flash-white', 'shockwave-active');
       setTimeout(() => document.body.classList.remove('flash-white', 'shockwave-active'), 600);
     } else if (n === x && x > 0) {
-      // BẰNG KỶ LỤC
-      createExplosion(50, 'rgba(255, 204, 0, 1)', false);
+      setStreak(n);
+      createExplosion(60, 'rgba(255, 204, 0, 1)', false);
     } else {
-      // DƯỚI KỶ LỤC
-      createExplosion(10, 'rgba(100, 100, 100, 1)', false);
+      createExplosion(15, 'rgba(150, 150, 150, 1)', false);
     }
     setTempStreak(0);
   };
 
-  // --- CÁC LOGIC CŨ ---
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -194,8 +200,7 @@ function App() {
   };
 
   const handleFapReset = () => {
-    if(window.confirm("BẠN VỪA PHÁ VỠ KỶ LUẬT? Level, EXP và STREAK sẽ về 0.")) {
-      setExp(0); setLevel(0); setStreak(0); setPersonalBest(0);
+    if(window.confirm("BẠN VỪA PHÁ VỠ KỶ LUẬT? Toàn bộ chỉ số sẽ về 0.")) {
       localStorage.clear();
       window.location.reload();
     }
@@ -206,6 +211,7 @@ function App() {
       className={`min-h-screen bg-[#020617] text-white p-4 md:p-8 font-sans relative overflow-hidden crt-effect ${isOverdrive ? 'shake-intense' : ''}`}
       onMouseMove={handleMove}
       onMouseUp={handleRelease}
+      onMouseLeave={handleRelease}
       onTouchMove={handleMove}
       onTouchEnd={handleRelease}
     >
@@ -213,77 +219,82 @@ function App() {
 
       <div className="max-w-5xl mx-auto relative z-10">
         
-        {/* Header Section */}
+        {/* Header */}
         <div className="border-b-2 border-slate-800 pb-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic tracking-tighter pr-4">
+          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 uppercase italic tracking-tighter">
             THE LAST LINE
           </h1>
           <div className="flex flex-col items-center md:items-end">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Hết ngày sau</span>
-            <div className="text-3xl font-mono font-black text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]">
+            <div className="text-3xl font-mono font-black text-yellow-400">
               {timeLeft}
             </div>
           </div>
         </div>
 
-        <div className="bg-[#0f172a]/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative">
+        <div className="bg-[#0f172a]/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl">
           
-          <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8">
-            <div className="flex items-center gap-12">
-              <div className="flex items-baseline gap-4">
+          {/* Main Info Section - Piston moved to right */}
+          <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-8">
+            
+            {/* Left: Level & Exp */}
+            <div className="flex-1 flex flex-col items-start">
+              <div className="flex items-baseline gap-4 mb-4">
                 <span className="text-4xl font-black text-slate-500 uppercase italic">Level</span>
-                <span className="text-8xl md:text-9xl font-mono font-black text-[#00f2ff] drop-shadow-[0_0_30px_rgba(0,242,255,0.4)] tracking-tighter">
+                <span className="text-8xl md:text-9xl font-mono font-black text-[#00f2ff] drop-shadow-[0_0_30px_rgba(0,242,255,0.4)]">
                   {level.toString().padStart(2, '0')}
                 </span>
               </div>
-
-              {/* PISTON INPUT SYSTEM */}
-              <div className="flex flex-col items-center gap-4">
-                <div 
-                    ref={pistonRef}
-                    onMouseDown={handleStart}
-                    onTouchStart={handleStart}
-                    className={`piston-container ${isOverdrive ? 'piston-overdrive' : ''}`}
-                >
-                    <div 
-                        className="cylinder-fill" 
-                        style={{ height: `${isDragging ? (tempStreak / (isOverdrive ? 100 : personalBest || 1)) * 100 : 0}%` }}
-                    ></div>
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <span className="text-2xl font-black font-mono">
-                            {isDragging ? tempStreak : streak}
-                        </span>
-                    </div>
-                </div>
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Kéo để báo Streak</span>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <FireLogo size={110} progress={(Object.values(completedTasks).filter(t => t).length / 5) * 100} isCompleted={Object.values(completedTasks).every(t => t)} />
-                <div className="mt-4 px-5 py-1.5 bg-black/60 border border-purple-500/30 rounded-xl backdrop-blur-md">
-                   <p className="streak-text-cyber text-sm">PB: {personalBest} DAYS</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-right">
-              <span className="text-yellow-400 text-xl md:text-2xl font-mono font-black">
+              <span className="text-yellow-400 text-2xl font-mono font-black">
                 {exp} <span className="text-sm text-orange-500/80">/ {maxExp} EXP</span>
               </span>
             </div>
+
+            {/* Center: Flame Logo */}
+            <div className="flex flex-col items-center">
+              <FireLogo size={120} progress={(Object.values(completedTasks).filter(t => t).length / 5) * 100} isCompleted={Object.values(completedTasks).every(t => t)} />
+              <div className="mt-6 px-5 py-2 bg-black/60 border border-purple-500/30 rounded-xl">
+                 <p className="streak-text-cyber text-sm">PB: {personalBest} DAYS</p>
+              </div>
+            </div>
+
+            {/* Right: Piston Input */}
+            <div className="flex flex-col items-center gap-4 min-w-[120px]">
+              <div 
+                  ref={pistonRef}
+                  onMouseDown={handleStart}
+                  onTouchStart={handleStart}
+                  className={`piston-container cursor-ns-resize ${isOverdrive ? 'piston-overdrive' : ''}`}
+                  style={{ height: '280px', width: '70px' }}
+              >
+                  <div 
+                      className="cylinder-fill" 
+                      style={{ height: `${isDragging ? (tempStreak / (isOverdrive ? 100 : (personalBest || 1))) * 100 : 0}%` }}
+                  ></div>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="text-3xl font-black font-mono drop-shadow-md">
+                          {isDragging ? tempStreak : streak}
+                      </span>
+                  </div>
+              </div>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                {isDragging ? "ĐANG NÉN..." : "KÉO LÊN ĐỂ BÁO STREAK"}
+              </span>
+            </div>
+
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full h-7 bg-black/40 rounded-full mb-12 overflow-hidden border-2 border-slate-800 p-1 relative">
+          <div className="w-full h-8 bg-black/40 rounded-full mb-12 border-2 border-slate-800 p-1 relative overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 transition-all duration-1000 ease-out rounded-full" 
+              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 transition-all duration-1000" 
               style={{ width: `${(exp / maxExp) * 100}%` }}
             ></div>
           </div>
 
           {/* Task Grid */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.5em] mb-6 text-center">Nhiệm vụ hàng ngày (+20 EXP/Quest)</h3>
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] text-center">Nhiệm vụ hàng ngày (+20 EXP/Quest)</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
                 { id: 'math', label: '1 Đề Toán', color: 'bg-rose-900/40 border-rose-600 text-rose-400' },
@@ -296,7 +307,7 @@ function App() {
                   key={task.id}
                   onClick={() => gainExp(task.id)}
                   disabled={completedTasks[task.id]}
-                  className={`p-5 border-2 rounded-2xl font-black text-[11px] transition-all uppercase flex flex-col items-center justify-center gap-2 ${
+                  className={`p-6 border-2 rounded-2xl font-black text-[11px] transition-all uppercase flex flex-col items-center justify-center gap-2 ${
                     completedTasks[task.id] 
                     ? "bg-emerald-500/20 border-emerald-400 text-emerald-400" 
                     : `${task.color} hover:scale-105 active:scale-95`
@@ -308,29 +319,11 @@ function App() {
             </div>
           </div>
 
-          {/* Rewards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-12">
-            <div className={`p-6 rounded-2xl border-2 flex items-center gap-6 ${exp >= 500 ? "bg-yellow-500/10 border-yellow-400 shadow-lg" : "bg-black/40 border-slate-800 opacity-20 grayscale"}`}>
-              <div className="text-5xl">{level >= 5 ? "🦊" : "🧋"}</div>
-              <div>
-                <p className="text-2xl font-black uppercase italic tracking-tighter">{level >= 5 ? "Giấy dán Naruto" : "Tocotoco kem cheese"}</p>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Mốc 500 EXP</p>
-              </div>
-            </div>
-            <div className={`p-6 rounded-2xl border-2 flex items-center gap-6 ${exp >= 1000 ? "bg-red-500/10 border-red-400 shadow-lg" : "bg-black/40 border-slate-800 opacity-20 grayscale"}`}>
-              <div className="text-5xl">{level >= 5 ? "🗡️" : "🍜"}</div>
-              <div>
-                <p className="text-2xl font-black uppercase italic tracking-tighter">{level >= 5 ? "Figure Naruto < 500k" : "Mì Ramen"}</p>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Mốc 1000 EXP</p>
-              </div>
-            </div>
-          </div>
-
           {/* Reset */}
-          <div className="flex justify-center border-t border-slate-800 pt-10">
+          <div className="flex justify-center mt-16 pt-10 border-t border-slate-800">
             <button 
               onClick={handleFapReset}
-              className="px-12 py-4 bg-red-600/20 border-2 border-red-600 text-red-500 font-black rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-[0.2em]"
+              className="px-10 py-4 bg-red-600/20 border-2 border-red-600 text-red-500 font-black rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-widest"
             >
               FAP (RESET ALL)
             </button>
